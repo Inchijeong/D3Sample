@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+    </head>
+    <body>
+        
+        <svg width="960" height="500"></svg>
+        <script src="https://d3js.org/d3.v4.min.js"></script>
+        <script>
+
+        var svg = d3.select("svg"),
+            margin = {top: 20, right: 20, bottom: 30, left: 50},
+            width = +svg.attr("width") - margin.left - margin.right,
+            height = +svg.attr("height") - margin.top - margin.bottom,
+            g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        var parseTime = d3.timeParse("%d-%b-%y");
+        var settingDate = new Date();
+        var x = d3.scaleTime()
+            .domain([settingDate.setDate(settingDate.getDate()-7), new Date()])
+            .range([0, width]);
+
+        var y = d3.scaleLinear()
+            .domain([0,10])
+            .range([height ,0]);
+
+        var line = d3.line()
+            .x(function(d) { return x(d.date); })
+            .y(function(d) { return y(d.number); });
+
+        var data = [
+            {date: "21-Dec-17 08:15:24", number: 2},
+            {date: "21-Dec-17 08:00:24", number: 3},
+            {date: "21-Dec-17 09:16:24", number: 5},
+            {date: "21-Dec-17 12:00:24", number: 1},
+            {date: "21-Dec-17 13:50:24", number: 3},
+            {date: "21-Dec-17 18:55:24", number: 2}
+        ];
+            
+        for (var d in data){
+            data[d].date = new Date(data[d].date);
+            data[d].number = +data[d].number;
+        }
+            
+       /* d3.tsv("data.tsv", function(d) {
+          d.date = parseTime(d.date);
+          d.number = +d.number;
+          return d;
+        }, function(error, data) {
+          if (error) throw error;*/
+            
+            
+          //x.domain(d3.extent(data, function(d) { return d.date; }));
+          //y.domain(d3.extent(data, function(d) { return d.number; }));
+
+          g.append("g")
+              .attr("transform", "translate(0," + height + ")")
+              .call(d3.axisBottom(x))
+              .select(".domain")
+              //.remove();
+
+          g.append("g")
+              .call(d3.axisLeft(y))
+              .append("text")
+              .attr("fill", "#000")
+              .attr("transform", "rotate(-90)")
+              .attr("y", 6)
+              .attr("dy", "0.71em")
+              .attr("text-anchor", "end")
+              .text("방문자수 (명)");
+
+          g.append("path")
+              .datum(data)
+              .attr("fill", "none")
+              .attr("stroke", "steelblue")
+              .attr("stroke-linejoin", "round")
+              .attr("stroke-linecap", "round")
+              .attr("stroke-width", 1.5)
+              .attr("d", line);
+        //});
+        </script>
+    </body>
+</html>
